@@ -1,0 +1,49 @@
+.speech-bubble {
+  display: none;
+  align-items: center;
+  height: 200px;
+  width: 300px;
+  border-radius: 50% 50% 50% 50%; 
+  background-color: orange;
+  text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  left: 115px;
+  top: 190px;
+  border: 40px solid;
+  border-color: orange transparent transparent orange;
+}
+
+button {
+  position: relative;
+  height: 44px;
+  width: 50px;
+  top: 600px;
+  left: 300px;
+  background: url("../images/navsprites.gif") 0 0;
+}
+
+.h-centered {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.v-centered {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.v-centered.h-centered {
+  transform: translate(-50%, -50%);
+}
