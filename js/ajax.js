@@ -1,42 +1,69 @@
-var schemeButton = document.querySelector('button#scheme');
-var colorButton = document.querySelector('button#color');
-var nameField = document.getElementById('scheme-name');
-var colorSquare = document.getElementById('color-square');
-
-
 (function () {
-  var colorButtonListener;
-  schemeButton.addEventListener('click', function() {
-    nameField.innerHTML = '&nbsp';
-    $.getJSON('http://www.colr.org/json/scheme/random',
-      function (colorScheme) {
-        colorButton.removeEventListener('click', colorButtonListener);
-        var colors = colorScheme.schemes[0].colors;
-        var name = colorScheme.schemes[0].tags[0].name;
-        nameField.innerHTML = name + ' (spalvų skaičius: ' + colors.length + ')';
-        colorSquare.style.backgroundColor = '#' + colors[0];
-        var getNextFromScheme = getNext(colors);
-        colorButtonListener = listenColorButton(getNextFromScheme);
+var schemeButton = document.querySelector('button#scheme'),
+    colorButton = document.querySelector('button#color'),
+    nameField = document.getElementById('scheme-name'),
+    colorSquare = document.getElementById('color-square');
+
+var iterator = (function() {
+  var counter = 1,
+      colorArray;
+  return {
+    getNextColor: function() {
+      if(counter <= colorArray.length - 1) {
+        return colorArray[counter++];
       }
-    );
-  });
+      else return;
+    },
+    setColors: function(colors) {
+      colorArray = colors;
+    },
+    reset: function() {
+      counter = 1;
+    }
+  };
 })();
 
-function getNext(array) {
-  var index = 1;
-  var max = array.length - 1;
-  return function() {
-    if(index <= max) {
-      return array[index++];
-    }
-    else{ return array[index]; }
-  };
+function changeColor() {
+  var color = iterator.getNextColor();
+  if(color) {
+    changeView(color);
+  }
 }
 
-function listenColorButton(getNextFromScheme) {
-  var changeColor = function() {
-    colorSquare.style.backgroundColor = '#' + getNextFromScheme();
-  };
-  colorButton.addEventListener('click', changeColor);
-  return changeColor;
+function getColorScheme() {
+  clearNameField();
+  $.getJSON('http://www.colr.org/json/scheme/random',
+    function(colorScheme) {
+      schemeHandler(colorScheme);
+  });
 }
+
+function schemeHandler(colorScheme) {
+  var properties = getSchemeProperties(colorScheme);
+  changeView(properties.colors[0], properties.name, properties.number);
+  iterator.reset();
+  iterator.setColors(properties.colors);
+}
+
+function getSchemeProperties(colorScheme) {
+  var colors = colorScheme.schemes[0].colors;
+  var number = colors.length;
+  var name = colorScheme.schemes[0].tags[0].name;
+  return { 'name': name, 'colors': colors, 'number': number };
+}
+ 
+function clearNameField() {
+  nameField.innerHTML = '&nbsp';
+}
+
+function changeView(color, name, number) {
+  colorSquare.style.backgroundColor = '#' + color;
+  if(name) {
+    nameField.innerHTML = name + ' (spalvų skaičius: ' + number + ')';
+  }
+}
+
+schemeButton.addEventListener('click', getColorScheme);
+colorButton.addEventListener('click', changeColor);
+
+})();
