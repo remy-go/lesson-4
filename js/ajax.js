@@ -4,7 +4,7 @@ var schemeButton = document.querySelector('button#scheme'),
     nameField = document.getElementById('scheme-name'),
     colorSquare = document.getElementById('color-square');
 
-var iterator = (function() {
+var colorIterator = (function() {
   var counter = 1,
       colorArray;
   return {
@@ -12,7 +12,10 @@ var iterator = (function() {
       if(counter <= colorArray.length - 1) {
         return colorArray[counter++];
       }
-      else return;
+      else { 
+        counter = 1;
+        return colorArray[0];
+      }
     },
     setColors: function(colors) {
       colorArray = colors;
@@ -24,7 +27,7 @@ var iterator = (function() {
 })();
 
 function changeColor() {
-  var color = iterator.getNextColor();
+  var color = colorIterator.getNextColor();
   if(color) {
     changeView(color);
   }
@@ -41,8 +44,8 @@ function getColorScheme() {
 function schemeHandler(colorScheme) {
   var properties = getSchemeProperties(colorScheme);
   changeView(properties.colors[0], properties.name, properties.number);
-  iterator.reset();
-  iterator.setColors(properties.colors);
+  colorIterator.reset();
+  colorIterator.setColors(properties.colors);
 }
 
 function getSchemeProperties(colorScheme) {
